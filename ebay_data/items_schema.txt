@@ -1,5 +1,5 @@
 {
-	"$schema": "schema for Auction database", 
+	"$schema": "schema for Auction database",
 	"title": "Items",
 	"description": "set of items up for auction",
 	"type": "array",
@@ -8,11 +8,11 @@
 		"type": "object",
 		"properties": {
 			"ItemID": {
-				"description": "an identifier unique across all items", 
+				"description": "an identifier unique across all items",
 				"type": "number"
 			},
 			"Name": {
-				"description": "A short item description used as the auction's title.", 
+				"description": "A short item description used as the auction's title.",
 				"type": "string"
 			},
 			"Category": {
@@ -29,24 +29,24 @@
 			"Buy_Price": {
 				"description": "The price, chosen by the seller before the auction starts, at
                                                                  which a bidder can win the auction immediately.
-                                                                 The seller may choose not to set such a price, in 
-                                                                 which case the element would be missing.", 
-				"type": "string", 
+                                                                 The seller may choose not to set such a price, in
+                                                                 which case the element would be missing.",
+				"type": "string",
 				"minimum": 0
 			},
 			"First_Bid": {
 				"description": "The minimum qualifying first-bid amount, as determined by the
 								seller before the auction starts. It does not mean there is a bid
-								at all.", 
+								at all.",
 				"type": "string"
 			},
 			"Number_of_Bids": {
-				"description": "Number of Bids/Bid elements, each corresponding to a bid for a particular item.", 
+				"description": "Number of Bids/Bid elements, each corresponding to a bid for a particular item.",
 				"type": "number"
 			},
 			"Bids": {
-				"description": "Bids placed on the item", 
-				"type": "array", 
+				"description": "Bids placed on the item",
+				"type": "array",
 				"items": {
 					"title": "Bid",
 					"type": "object",
@@ -94,29 +94,29 @@
                         "required": ["Bidder", "Time", "Amount"]
 					}
 				}
-			}, 
+			},
 			"Location": {
 				"description": "The seller's location information (e.g., city, state). See description
-								under Bidder", 
+								under Bidder",
 				"type": "string"
-			}, 
+			},
 			"Country": {
 				"description": "The seller's country. See description
-								under Bidder", 
+								under Bidder",
 				"type": "string"
 			},
 			"Started": {
-				"description": "Auction start time", 
+				"description": "Auction start time",
 				"type": "string"
 			},
 			"Ends": {
 				"description": "Auction end time. If this is in the past with respect to the current
 								system time, the auction is closed. If in the future, the auction is
-								still open.", 
+								still open.",
 				"type": "string"
 			},
 			"Seller": {
-				"description": "Attributes give the seller's UserID and rating.", 
+				"description": "Attributes give the seller's UserID and rating.",
 				"type": "object",
 				"properties": {
 					"UserID": {
