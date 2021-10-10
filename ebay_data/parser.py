@@ -320,6 +320,8 @@ def main(argv):
 
         if DEBUG: print('...done!')
 
+        out_str = out_str.replace('"', '\\"')
+
         with open(f_path, "w") as f:
             if DEBUG: print(f'Writing to {f_name}...')
 

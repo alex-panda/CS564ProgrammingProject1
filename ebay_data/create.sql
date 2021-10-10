@@ -11,8 +11,8 @@ DROP TABLE if exists Category;
 CREATE TABLE Person (
     id VARCHAR(20) PRIMARY KEY,
     rating INT,
-    location VARCHAR(20) NOT NULL,
-    country VARCHAR(20) NOT NULL
+    location VARCHAR(20),
+    country VARCHAR(20)
 );
 
 CREATE TABLE Item (
@@ -45,3 +45,4 @@ CREATE TABLE Category (
     item INT,
     PRIMARY KEY (name, item)
 );
+
