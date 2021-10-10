@@ -13,7 +13,6 @@ CREATE TABLE Person (
     rating INT,
     location VARCHAR(20) NOT NULL,
     country VARCHAR(20) NOT NULL
-  
 );
 
 CREATE TABLE Item (
@@ -26,16 +25,16 @@ CREATE TABLE Item (
     country VARCHAR(20),
     started VARCHAR(20),
     ends VARCHAR(20),
-    description VARCHAR(20),
     seller VARCHAR(20),
+    description VARCHAR(20),
     FOREIGN KEY (seller) REFERENCES Person(id)
 );
 
 CREATE TABLE Bid (
     id INT PRIMARY KEY,
     time VARCHAR(20) NOT NULL,
-    amount VARCHAR(20) NOT NULL,
     bidder VARCHAR(20),
+    amount VARCHAR(20) NOT NULL,
     bid_on INT,
     FOREIGN KEY (bidder) REFERENCES Person (id),
     FOREIGN KEY (bid_on) REFERENCES Item (id)
