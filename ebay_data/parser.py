@@ -79,7 +79,7 @@ def transformDollar(money):
 
 NULL = 'NULL' # The value that None will be in the .dat files
 Item = named_tuple('Item', ['id', 'name', 'currently', 'buy_price',
-    'first_bid', 'location', 'country', 'started', 'ends', 'seller', 'description'])
+    'first_bid', 'started', 'ends', 'seller', 'description'])
 Bid = named_tuple('Bid', ['id', 'time', 'bidder', 'amount', 'bid_on'])
 Person = named_tuple('Person', ['id', 'rating', 'location', 'country'])
 Category = named_tuple('Category', ['name', 'item'])
@@ -197,8 +197,8 @@ def parseJson(json_file):
                 seller_tuple = Person(
                     seller_id,
                     seller['Rating'],
-                    NULL,
-                    NULL
+                    item['Location'],
+                    item['Country'],
                 )
                 people_by_id[seller_id] =seller_tuple
 
@@ -209,8 +209,6 @@ def parseJson(json_file):
                 transformDollar(item['Currently']),
                 NULL if not ('Buy_Price' in item) else transformDollar(item['Buy_Price']),
                 transformDollar(item['First_Bid']),
-                item['Location'],
-                item['Country'],
                 transformDttm(item['Started']),
                 transformDttm(item['Ends']),
                 seller_id,

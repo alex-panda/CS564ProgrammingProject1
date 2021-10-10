@@ -21,8 +21,6 @@ CREATE TABLE Item (
     currently VARCHAR(20),
     buy_price VARCHAR(20),
     first_bid VARCHAR(20),
-    location VARCHAR(20),
-    country VARCHAR(20),
     started VARCHAR(20),
     ends VARCHAR(20),
     seller VARCHAR(20),
