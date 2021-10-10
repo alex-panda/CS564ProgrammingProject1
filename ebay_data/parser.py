@@ -22,7 +22,7 @@ the main function. We create the initial Python dictionary object of items for
 you; the rest is up to you!
 Happy parsing!
 """
-DEBUG = True
+DEBUG = False
 
 # Initial Imports
 import sys
@@ -78,18 +78,20 @@ def transformDollar(money):
 
 
 NULL = 'NULL' # The value that None will be in the .dat files
-Item = named_tuple('Item', ['id', 'name', 'currently', 'buy_price', 'first_bid', 'location', 'country', 'started', 'ends', 'seller', 'description'])
-Bid = named_tuple('Bid', ['id', 'time', 'bidder', 'amount'])
+Item = named_tuple('Item', ['id', 'name', 'currently', 'buy_price',
+    'first_bid', 'location', 'country', 'started', 'ends', 'seller', 'description'])
+Bid = named_tuple('Bid', ['id', 'time', 'bidder', 'amount', 'bid_on'])
 Person = named_tuple('Person', ['id', 'rating', 'location', 'country'])
-Category = named_tuple('Category', ['id', 'item_id', 'category'])
+Category = named_tuple('Category', ['name', 'item'])
 
 def id_gen():
     n = -1
     while True:
         n += 1
         yield n
+
 bid_id = id_gen() # Generate bid ids that will be unique for the current run of the program
-category_id = id_gen()
+category_proxy_id = id_gen()
 """
 Parses a single json file. Currently, there's a loop that iterates over each
 item in the data set. Your job is to extend this functionality to create all
@@ -123,6 +125,7 @@ def parseJson(json_file):
     bid_list = []
     person_list = []
     category_list = []
+    category_proxy_list = []
 
     with open(json_file, 'r') as f:
         items = loads(f.read())['Items'] # creates a Python dictionary of Items for the supplied json file
@@ -137,15 +140,11 @@ def parseJson(json_file):
 
             for category in item['Category']:
                 category_tuple = Category(
-                    next(category_id),
+                    category, # Name of the category
                     item_id,
-                    category
                 )
 
                 category_list.append(category_tuple)
-
-            # Is the
-            currently = item['Currently']
 
             # Load in Bids for this Item
             if item['Bids'] is not None:
@@ -154,30 +153,41 @@ def parseJson(json_file):
                     # Handle Bidder (a Person)
                     bidder = bid['Bidder']
                     bidder_id = bidder["UserID"] # Person.id
+                    rating = int(bidder['Rating'])
 
-                    if not (bidder_id in people_by_id) \
-                            or (people_by_id[bidder_id].location == NULL \
-                                and people_by_id[bidder_id].country == NULL):
-                        bidder_tuple = Person(
-                            bidder_id,
-                            bidder['Rating'],
-                            NULL if not ('Location' in bidder) else bidder['Location'],
-                            NULL if not ('Country' in bidder) else bidder['Country']
-                        )
-                        people_by_id[bidder_id] = bidder_tuple
-                        person_list.append(bidder_tuple)
+                    location = NULL if not ('Location' in bidder) else bidder['Location']
+                    country = NULL if not ('Country' in bidder) else bidder['Country']
+
+                    # If there is a record already in the people_by_id dict,
+                    #   then make sure the location or country is not lost
+                    #   (because this record may have location or country = NULL)
+                    #   when this record takes its place
+                    if bidder_id in people_by_id:
+                        other_record = people_by_id[bidder_id]
+
+                        if location is NULL:
+                            location = other_record.location
+
+                        if country is NULL:
+                            country = other_record.country
+
+                    bidder_tuple = Person(
+                        bidder_id,
+                        rating,
+                        location,
+                        country
+                    )
+                    people_by_id[bidder_id] = bidder_tuple
 
                     # Create bid Tuple
                     bid_tuple = Bid(
                         next(bid_id),
                         transformDttm(bid["Time"]),
                         bidder_id,
-                        transformDollar(bid["Amount"])
+                        transformDollar(bid["Amount"]),
+                        item_id,
                     )
                     bid_list.append(bid_tuple)
-
-            # Handle Currently (a Bid)
-            currently = None # Bid.id
 
             # Handle Seller (a Person)
             seller = item['Seller']
@@ -191,13 +201,12 @@ def parseJson(json_file):
                     NULL
                 )
                 people_by_id[seller_id] =seller_tuple
-                person_list.append(seller_tuple)
 
             # Create the tuple for the current Item
             item_tuple = Item(
                 item_id,
                 item['Name'],
-                currently,
+                transformDollar(item['Currently']),
                 NULL if not ('Buy_Price' in item) else transformDollar(item['Buy_Price']),
                 transformDollar(item['First_Bid']),
                 item['Location'],
@@ -214,7 +223,7 @@ def parseJson(json_file):
             'Item': item_list,
             'Bid': bid_list,
             'Person': person_list,
-            'Category': category_list
+            'Category': category_list,
         }
 
         return schema
@@ -243,6 +252,7 @@ def main(argv):
     bid_list = []
     person_list = []
     category_list = []
+    category_proxy_list = []
 
     # loops over all .json files in the argument
     while len(file_stack) > 0:
@@ -287,9 +297,9 @@ def main(argv):
 
         if DEBUG: print('...done!')
 
-        if DEBUG: print(f'Sorting for {f_name}...')
+        if DEBUG: print(f'Returning to list for {f_name}...')
 
-        li = sorted([e for e in li], key=lambda e:e.id)
+        li = [e for e in li]
 
         if DEBUG:
             print(f'...done!')
@@ -317,6 +327,13 @@ def main(argv):
 
             if DEBUG: print('...done!')
 
+    # Have to do this to debug:
+    # Persons have not been added to the person_list yet. They have
+    #   only been stored in the people_by_id dict so add them to the
+    #   person_list now
+    person_list.extend(people_by_id.values())
+
+    # Now write all to files
     write_list_to_file(item_list, join(dat_file_dir, f'Item{dat_ext}'))
     write_list_to_file(bid_list, join(dat_file_dir, f'Bid{dat_ext}'))
     write_list_to_file(person_list, join(dat_file_dir, f'Person{dat_ext}'))
