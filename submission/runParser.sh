@@ -6,7 +6,7 @@ if ! [ -x "$(command -v python)" ]; then
         echo "python and python3 commands did not work!"
         exit 1
     fi
-    python3 parser.py ./items-*.json
+    python3 parser.py ebay_data/items-*.json
     exit 1
 fi
-python parser.py ./items-*.json
+python parser.py ebay_data/items-*.json

@@ -79,7 +79,7 @@ def transformDollar(money):
 
 NULL = 'NULL' # The value that None will be in the .dat files
 Item = named_tuple('Item', ['id', 'name', 'currently', 'buy_price',
-    'first_bid', 'started', 'ends', 'seller', 'description'])
+    'first_bid', 'number_of_bids', 'started', 'ends', 'seller', 'description'])
 Bid = named_tuple('Bid', ['id', 'time', 'bidder', 'amount', 'bid_on'])
 Person = named_tuple('Person', ['id', 'rating', 'location', 'country'])
 Category = named_tuple('Category', ['name', 'item'])
@@ -95,28 +95,7 @@ category_proxy_id = id_gen()
 """
 Parses a single json file. Currently, there's a loop that iterates over each
 item in the data set. Your job is to extend this functionality to create all
-of the necessary SQL tables for your database.
-
-Returns the tables in form:
-{
-"Item": [
-            (id, name, currently, buy_price, first_bid, location, country, started, ends, seller, description),
-            ...
-        ],
-"Bid": [
-            (id, time, bidder, item),
-            ...
-        ],
-"Person": [
-            (id, rating, location, country),
-            ...
-        ],
-"Category": [
-            (id, item_id, category),
-            ...
-        ]
-}
-where the keys of the dictionary are the table names and then the value of each
+of the necessary SQL tables for your database. Where the keys of the dictionary are the table names and then the value of each
 table is a list of tuples representing the records that should be in that table.
 """
 people_by_id = {} # Global so that it will apply to all the json files
@@ -209,6 +188,7 @@ def parseJson(json_file):
                 transformDollar(item['Currently']),
                 NULL if not ('Buy_Price' in item) else transformDollar(item['Buy_Price']),
                 transformDollar(item['First_Bid']),
+                int(item["Number_of_Bids"]),
                 transformDttm(item['Started']),
                 transformDttm(item['Ends']),
                 seller_id,

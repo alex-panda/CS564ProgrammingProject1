@@ -2,7 +2,7 @@ database_name=auction.db
 python=python
 sqlite=sqlite3
 
-run: clean make_dats load_sql run_queries
+run: make_dats load_sql run_queries
 
 make_dats: FORCE
 	$(python) parser.py ebay_data/items-*.json
